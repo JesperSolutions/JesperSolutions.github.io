@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="House Locator Dashboard for managing and analyzing house roof areas and their impact.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Locator Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+    <header>
+        <div id="progress-bar-container">
+            <div id="progress-bar" aria-live="polite"></div>
+        </div>
+    </header>
+    <main>
+        <section id="info-container" class="centered-section">
+            <h1>Welcome to the House Locator Dashboard</h1>
+            <p>Discover how a green roof can help you become more CO2e neutral, save water, and improve employee well-being.</p>
+            <div class="info-box">
+                <h2>Benefits of a Green Roof</h2>
+                <ul>
+                    <li>Reduce carbon footprint</li>
+                    <li>Save water</li>
+                    <li>Increase energy efficiency</li>
+                    <li>Improve social well-being</li>
+                </ul>
+            </div>
+            <input type="text" id="address-input" placeholder="Enter the house address" aria-label="House address input">
+            <button id="search-btn" onclick="searchAddress()">Search</button>
+        </section>
+        <section id="map-container" style="display: none;">
+            <div id="map" aria-label="Map displaying house location"></div>
+            <button id="open-panel-btn" onclick="openPanel()" style="display: none;">☰ Open Panel</button>
+        </section>
+        <aside id="side-panel" class="side-panel" aria-hidden="true">
+            <button class="closebtn" onclick="closePanel()">×</button>
+            <div class="panel-content">
+                <p>Select the roof area by clicking on the corners to create a polygon.</p>
+                <button id="draw-polygon-btn" onclick="enableDrawingMode()">Draw Polygon</button>
+                <button id="reset-polygon-btn" onclick="resetPolygon()">Reset Polygon</button>
+                <p>Roof Area (m²): <span id="roof-area">0</span></p>
+                <input type="number" id="manual-roof-area" placeholder="Enter total roof area manually" aria-label="Manual roof area input">
+                <button onclick="setManualArea()">Set Manual Area</button>
+                <div class="roof-type-container">
+                    <label for="roof-type">Select Roof Type:</label>
+                    <select id="roof-type">
+                        <option value="type1">Type 1 - Low CO2</option>
+                        <option value="type2">Type 2 - Medium CO2</option>
+                        <option value="type3">Type 3 - High CO2</option>
+                        <option value="type4">Type 4 - Very High CO2</option>
+                    </select>
+                </div>
+                <button onclick="confirmRoofArea()">Confirm Roof Area</button>
+                <button id="back-btn" onclick="backToAddress()">Back</button>
+            </div>
+        </aside>
+        <aside id="sliders-panel" class="side-panel" aria-hidden="true">
+            <button class="closebtn" onclick="closeSlidersPanel()">×</button>
+            <div class="panel-content">
+                <div class="slider-container">
+                    <label for="energy-slider">Energy: <span id="energy-percentage">0</span>%</label>
+                    <input type="range" id="energy-slider" min="0" max="100" value="0" oninput="updateSliders()">
+                    <input type="number" id="energy-input" min="0" max="100" value="0" oninput="updateInputs()">
+                </div>
+                <div class="slider-container">
+                    <label for="water-slider">Water: <span id="water-percentage">0</span>%</label>
+                    <input type="range" id="water-slider" min="0" max="100" value="0" oninput="updateSliders()">
+                    <input type="number" id="water-input" min="0" max="100" value="0" oninput="updateInputs()">
+                </div>
+                <div class="slider-container">
+                    <label for="urban-farming-slider">Urban Farming: <span id="urban-farming-percentage">0</span>%</label>
+                    <input type="range" id="urban-farming-slider" min="0" max="100" value="0" oninput="updateSliders()">
+                    <input type="number" id="urban-farming-input" min="0" max="100" value="0" oninput="updateInputs()">
+                </div>
+                <div class="slider-container">
+                    <label for="social-slider">Social: <span id="social-percentage">0</span>%</label>
+                    <input type="range" id="social-slider" min="0" max="100" value="0" oninput="updateSliders()">
+                    <input type="number" id="social-input" min="0" max="100" value="0" oninput="updateInputs()">
+                </div>
+                <button onclick="confirmPercentages()">Confirm Percentages</button>
+                <button id="update-roof-btn" onclick="updateSections()">Update Roof</button>
+                <button id="back-to-area-btn" onclick="backToArea()">Back</button>
+            </div>
+        </aside>
+        <section id="lca-panel" class="bottom-panel" aria-hidden="true">
+            <button class="closebtn" onclick="closeLcaPanel()">×</button>
+            <div class="panel-content">
+                <h2>LCA Analysis</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-box">
+                        <h3>Total CO2e Emitted</h3>
+                        <p id="total-co2e-emitted">0 kg</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <h3>Total CO2e Saved per Year</h3>
+                        <p id="total-co2e-saved">0 kg</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <h3>Years to Neutral</h3>
+                        <p id="years-to-neutral">0</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <h3>Water Saved per Year</h3>
+                        <p id="water-saved">0 liters</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <h3>Energy Created per Year</h3>
+                        <p id="energy-created">0 kWh</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <h3>Social Impact Score</h3>
+                        <p id="social-impact">0 score</p>
+                    </div>
+                    <div class="dashboard-box">
+                        <canvas id="lca-chart"></canvas>
+                    </div>
+                    <div class="dashboard-box">
+                        <canvas id="xy-graph"></canvas>
+                    </div>
+                    <div class="dashboard-box" id="esg-messages"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuaGzETYVE5J6VHmtLW2-WpCsKXew0YvE&libraries=places,drawing,geometry&callback=initMap" async defer></script>
+    <script src="js/main.js" defer></script>
+</body>
+</html>
