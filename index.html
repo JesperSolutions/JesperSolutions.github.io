@@ -1,130 +1,95 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="House Locator Dashboard for managing and analyzing house roof areas and their impact.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>House Locator Dashboard</title>
+    <meta name="description" content="A tool for testing and evaluating roof segments for environmental impact.">
+    <title>Roof Segment Tester</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuaGzETYVE5J6VHmtLW2-WpCsKXew0YvE&libraries=places,drawing,geometry" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.3.2/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/script.js" defer></script>
 </head>
-<body>
-    <header>
-        <div id="progress-bar-container">
-            <div id="progress-bar" aria-live="polite"></div>
+<body onload="initMap()">
+    <header role="banner">
+        <div class="logo" aria-label="ERC (ESG-Roof-Calculator)">
+            <img src="assets/images/aglogo.png" alt="Agritectum Logo">
+            <p>ESG Roof Calculator</p>
         </div>
+        <button class="hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </button>
+        <nav class="menu" role="navigation">
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">About</a>
+            <div class="dropdown">
+                <button class="dropbtn" aria-haspopup="true" aria-expanded="false">User</button>
+                <div class="dropdown-content">
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+                </div>
+            </div>
+        </nav>
     </header>
-    <main>
-        <section id="info-container" class="centered-section">
-            <h1>Welcome to the House Locator Dashboard</h1>
-            <p>Discover how a green roof can help you become more CO2e neutral, save water, and improve employee well-being.</p>
-            <div class="info-box">
-                <h2>Benefits of a Green Roof</h2>
-                <ul>
-                    <li>Reduce carbon footprint</li>
-                    <li>Save water</li>
-                    <li>Increase energy efficiency</li>
-                    <li>Improve social well-being</li>
-                </ul>
+    <main id="container">
+        <aside id="sidebar" role="complementary">
+            <h2>Areas</h2>
+            <select id="roof-type" onchange="updateRoofType()" aria-label="Select Roof Type">
+                <option selected disabled>Select Roof Type</option>
+            </select>
+            <ul id="sidebar-content" role="list"></ul>
+            <div class="sidebar-actions">
+                <button onclick="saveDesign()"><i class="fas fa-save"></i> Save Design</button>
+                <button id="toggle-saved-designs" onclick="toggleSavedDesigns()"><i class="fas fa-folder-open"></i> Saved Designs</button>
+                <button onclick="loadDesign()"><i class="fas fa-upload"></i> Load Design</button>
+                <button onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+                <button onclick="resetAllPolygons()"><i class="fas fa-eraser"></i> Reset All Areas</button>
             </div>
-            <input type="text" id="address-input" placeholder="Enter the house address" aria-label="House address input">
-            <button id="search-btn" onclick="searchAddress()">Search</button>
-        </section>
-        <section id="map-container" style="display: none;">
-            <div id="map" aria-label="Map displaying house location"></div>
-            <button id="open-panel-btn" onclick="openPanel()" style="display: none;">☰ Open Panel</button>
-        </section>
-        <aside id="side-panel" class="side-panel" aria-hidden="true">
-            <button class="closebtn" onclick="closePanel()">×</button>
-            <div class="panel-content">
-                <p>Select the roof area by clicking on the corners to create a polygon.</p>
-                <button id="draw-polygon-btn" onclick="enableDrawingMode()">Draw Polygon</button>
-                <button id="reset-polygon-btn" onclick="resetPolygon()">Reset Polygon</button>
-                <p>Roof Area (m²): <span id="roof-area">0</span></p>
-                <input type="number" id="manual-roof-area" placeholder="Enter total roof area manually" aria-label="Manual roof area input">
-                <button onclick="setManualArea()">Set Manual Area</button>
-                <div class="roof-type-container">
-                    <label for="roof-type">Select Roof Type:</label>
-                    <select id="roof-type">
-                        <option value="type1">Type 1 - Low CO2</option>
-                        <option value="type2">Type 2 - Medium CO2</option>
-                        <option value="type3">Type 3 - High CO2</option>
-                        <option value="type4">Type 4 - Very High CO2</option>
-                    </select>
-                </div>
-                <button onclick="confirmRoofArea()">Confirm Roof Area</button>
-                <button id="back-btn" onclick="backToAddress()">Back</button>
+            <div id="total-area">Total Area: 0 m�</div>
+            <div id="lca-results">
+                <div id="total-co2-saved">Total CO2e Saved: 0 kg</div>
+                <div id="total-water-saved">Total Water Saved: 0 liters</div>
+                <div id="total-power-generated">Total Power Generated: 0 kWh</div>
+                <div id="years-to-offset">Years to Offset: 0 years</div>
             </div>
         </aside>
-        <aside id="sliders-panel" class="side-panel" aria-hidden="true">
-            <button class="closebtn" onclick="closeSlidersPanel()">×</button>
-            <div class="panel-content">
-                <div class="slider-container">
-                    <label for="energy-slider">Energy: <span id="energy-percentage">0</span>%</label>
-                    <input type="range" id="energy-slider" min="0" max="100" value="0" oninput="updateSliders()">
-                    <input type="number" id="energy-input" min="0" max="100" value="0" oninput="updateInputs()">
-                </div>
-                <div class="slider-container">
-                    <label for="water-slider">Water: <span id="water-percentage">0</span>%</label>
-                    <input type="range" id="water-slider" min="0" max="100" value="0" oninput="updateSliders()">
-                    <input type="number" id="water-input" min="0" max="100" value="0" oninput="updateInputs()">
-                </div>
-                <div class="slider-container">
-                    <label for="urban-farming-slider">Urban Farming: <span id="urban-farming-percentage">0</span>%</label>
-                    <input type="range" id="urban-farming-slider" min="0" max="100" value="0" oninput="updateSliders()">
-                    <input type="number" id="urban-farming-input" min="0" max="100" value="0" oninput="updateInputs()">
-                </div>
-                <div class="slider-container">
-                    <label for="social-slider">Social: <span id="social-percentage">0</span>%</label>
-                    <input type="range" id="social-slider" min="0" max="100" value="0" oninput="updateSliders()">
-                    <input type="number" id="social-input" min="0" max="100" value="0" oninput="updateInputs()">
-                </div>
-                <button onclick="confirmPercentages()">Confirm Percentages</button>
-                <button id="update-roof-btn" onclick="updateSections()">Update Roof</button>
-                <button id="back-to-area-btn" onclick="backToArea()">Back</button>
-            </div>
-        </aside>
-        <section id="lca-panel" class="bottom-panel" aria-hidden="true">
-            <button class="closebtn" onclick="closeLcaPanel()">×</button>
-            <div class="panel-content">
-                <h2>LCA Analysis</h2>
-                <div class="dashboard-grid">
-                    <div class="dashboard-box">
-                        <h3>Total CO2e Emitted</h3>
-                        <p id="total-co2e-emitted">0 kg</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <h3>Total CO2e Saved per Year</h3>
-                        <p id="total-co2e-saved">0 kg</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <h3>Years to Neutral</h3>
-                        <p id="years-to-neutral">0</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <h3>Water Saved per Year</h3>
-                        <p id="water-saved">0 liters</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <h3>Energy Created per Year</h3>
-                        <p id="energy-created">0 kWh</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <h3>Social Impact Score</h3>
-                        <p id="social-impact">0 score</p>
-                    </div>
-                    <div class="dashboard-box">
-                        <canvas id="lca-chart"></canvas>
-                    </div>
-                    <div class="dashboard-box">
-                        <canvas id="xy-graph"></canvas>
-                    </div>
-                    <div class="dashboard-box" id="esg-messages"></div>
-                </div>
-            </div>
+        <section id="map-container">
+            <input id="search-bar" type="text" placeholder="Search for address" aria-label="Search for address">
+            <div id="map"></div>
+        <section id="lca-report" style="display: none;">
+        <!-- The info box is now moved under the roof type selector -->
         </section>
     </main>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuaGzETYVE5J6VHmtLW2-WpCsKXew0YvE&libraries=places,drawing,geometry&callback=initMap" async defer></script>
-    <script src="js/main.js" defer></script>
+    <aside id="saved-designs-sidebar" class="hidden" role="complementary">
+        <h3>Saved Designs</h3>
+        <ul id="designs-list"></ul>
+        <button onclick="confirmDeleteAllDesigns()">Delete All Designs</button>
+    </aside>
+    <div id="confirmation-modal" class="modal hidden" role="dialog" aria-labelledby="confirmation-modal-title">
+        <div class="modal-content">
+            <p id="confirmation-modal-title">Are you sure you want to delete all designs?</p>
+            <button onclick="deleteAllDesigns()">Yes</button>
+            <button onclick="closeModal()">No</button>
+        </div>
+    </div>
+    <div id="introduction-modal" class="modal visible" role="dialog" aria-labelledby="introduction-modal-title">
+        <div class="modal-content">
+            <h2 id="introduction-modal-title">Welcome to the ESG Roof Calculator </h2>
+            <p>1. Use the drawing tools to outline areas on the roof.</p>
+            <p>2. Assign a type to each area (Solar Panels, Water Storage, etc.).</p>
+            <p>3. Adjust the shapes and sizes of the areas as needed.</p>
+            <p>4. Save or export your design using the buttons provided.</p>
+            <button onclick="closeIntroductionModal()">Close</button>
+        </div>
+    </div>
+    <div id="notifications" aria-live="polite"></div>
 </body>
 </html>
