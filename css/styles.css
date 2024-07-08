@@ -2,7 +2,7 @@
 :root {
 	--primary-color: #4CAF50;
 	--secondary-color: #333333;
-	--accent-color: #FFFF; /* Changed to white highlight */
+	--accent-color: #FFD700;
 	--background-color: #F5F5F5;
 	--text-color: #212121;
 	--header-bg-color: var(--secondary-color);
@@ -14,6 +14,10 @@
 	--modal-bg-color: rgba(0, 0, 0, 0.5);
 	--modal-content-bg-color: #FFFFFF;
 	--transition-duration: 0.3s;
+	--font-family: 'Roboto', sans-serif;
+	--font-size-base: 16px;
+	--font-size-large: 1.25rem;
+	--font-size-small: 0.875rem;
 }
 
 /* Base Styles */
@@ -24,12 +28,13 @@
 }
 
 body, html {
-	font-family: 'Roboto', sans-serif;
+	font-family: var(--font-family);
 	background-color: var(--background-color);
 	color: var(--text-color);
 	height: 100vh;
 	display: flex;
 	flex-direction: column;
+	font-size: var(--font-size-base);
 }
 
 header {
@@ -53,7 +58,7 @@ header {
 		}
 
 		header .logo p {
-			font-size: 1.5em;
+			font-size: var(--font-size-large);
 			font-weight: 700;
 		}
 
@@ -68,6 +73,7 @@ header {
 		padding: 10px 20px;
 		transition: background-color var(--transition-duration);
 		border-radius: var(--border-radius);
+		font-size: var(--font-size-base);
 	}
 
 		.menu a:hover {
@@ -119,34 +125,38 @@ header {
 	}
 
 #container {
-	display: flex;
-	flex: 1;
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+	gap: 20px;
+	padding: 20px;
 	height: calc(100vh - 80px);
 	overflow: hidden;
 }
 
 #map-container {
-	flex: 1;
 	display: flex;
 	flex-direction: column;
-	width: 75%;
+	width: 100%;
 	height: 100%;
 }
 
 #map {
 	flex: 1;
 	width: 100%;
+	border-radius: var(--border-radius);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #search-bar {
-	margin: 10px;
+	margin-bottom: 20px;
 	padding: 10px;
 	background-color: var(--input-bg-color);
 	color: var(--text-color);
 	border: none;
 	border-radius: var(--border-radius);
-	width: calc(100% - 20px);
+	width: 100%;
 	transition: background-color var(--transition-duration);
+	font-size: var(--font-size-base);
 }
 
 	#search-bar:focus {
@@ -155,18 +165,20 @@ header {
 	}
 
 #sidebar {
-	width: 25%;
 	background-color: var(--header-bg-color);
 	padding: 20px;
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	border-radius: var(--border-radius);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 	#sidebar h2, #sidebar h3 {
 		color: var(--primary-color);
 		margin-bottom: 15px;
+		font-size: var(--font-size-large);
 	}
 
 	#sidebar ul {
@@ -204,7 +216,7 @@ button {
 	border: none;
 	border-radius: var(--border-radius);
 	transition: background-color var(--transition-duration);
-	font-size: 1em;
+	font-size: var(--font-size-base);
 }
 
 	button:hover {
@@ -214,6 +226,7 @@ button {
 .button-small {
 	padding: 5px;
 	margin: 0;
+	font-size: var(--font-size-small);
 }
 
 select, input[type="text"] {
@@ -223,7 +236,7 @@ select, input[type="text"] {
 	color: var(--text-color);
 	border: none;
 	border-radius: var(--border-radius);
-	font-size: 1em;
+	font-size: var(--font-size-base);
 	transition: background-color var(--transition-duration);
 }
 
@@ -234,7 +247,7 @@ select, input[type="text"] {
 
 #total-area, #lca-results {
 	margin-top: 20px;
-	font-size: 1.2em;
+	font-size: var(--font-size-large);
 	color: var(--primary-color);
 	text-align: center;
 }
@@ -267,12 +280,13 @@ select, input[type="text"] {
 		}
 
 	#container {
-		flex-direction: column;
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
 	}
 
 	#map-container, #sidebar {
 		width: 100%;
-		height: 50%;
+		height: auto;
 	}
 
 	#sidebar {
@@ -294,6 +308,7 @@ select, input[type="text"] {
 	z-index: 10;
 	padding: 20px;
 	overflow-y: auto;
+	border-radius: var(--border-radius);
 }
 
 	#saved-designs-sidebar.hidden {
@@ -341,7 +356,7 @@ select, input[type="text"] {
 	text-align: center;
 	border-radius: var(--border-radius);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	animation: fadeIn 0.3s ease-in-out;
+	animation: fadeIn var(--transition-duration) ease-in-out;
 }
 
 .modal.visible {
@@ -361,13 +376,13 @@ select, input[type="text"] {
 }
 
 .modal h2 {
-	font-size: 1.8em;
+	font-size: var(--font-size-large);
 	color: var(--primary-color);
 	margin-bottom: 15px;
 }
 
 .modal p {
-	font-size: 1.2em;
+	font-size: var(--font-size-base);
 	color: var(--text-color);
 	margin-bottom: 15px;
 	line-height: 1.5;
@@ -442,9 +457,11 @@ select, input[type="text"] {
 	.roof-type-info h3 {
 		color: var(--primary-color);
 		margin-bottom: 10px;
+		font-size: var(--font-size-large);
 	}
 
 	.roof-type-info p {
 		margin-bottom: 10px;
 		line-height: 1.5;
+		font-size: var(--font-size-base);
 	}
