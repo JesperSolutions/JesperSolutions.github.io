@@ -6,6 +6,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
     // Simple check for demo purposes
     if (username === 'admin' && password === 'password') {
+        // Set the authentication status in sessionStorage
+        sessionStorage.setItem('isAuthenticated', 'true');
         window.location.href = 'index.html';
     } else {
         alert('Invalid username or password');
