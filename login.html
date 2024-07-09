@@ -9,6 +9,7 @@
 <body>
     <div class="login-container">
         <div class="login-box">
+            <img src="assets/images/aglogo.png" alt="Logo" class="logo">
             <h2>Login</h2>
             <form id="loginForm">
                 <div class="input-group">
@@ -18,6 +19,10 @@
                 <div class="input-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
+                </div>
+                <div class="input-group checkbox-group">
+                    <input type="checkbox" id="disclaimer" name="disclaimer" required>
+                    <label for="disclaimer">I acknowledge that by logging in, I agree not to distribute, take screenshots, or share any material.</label>
                 </div>
                 <button type="submit">Login</button>
             </form>

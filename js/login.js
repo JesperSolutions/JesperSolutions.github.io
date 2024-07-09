@@ -3,6 +3,12 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+    const disclaimer = document.getElementById('disclaimer').checked;
+
+    if (!disclaimer) {
+        alert('You must acknowledge the disclaimer to proceed.');
+        return;
+    }
 
     // Simple check for demo purposes
     if (username === 'admin' && password === 'password') {

@@ -28,6 +28,12 @@ body, html {
     text-align: center;
 }
 
+    .login-box .logo {
+        width: 100px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
     .login-box h2 {
         margin-bottom: 20px;
         font-size: var(--font-size-large);
@@ -59,11 +65,27 @@ body, html {
             outline: none;
         }
 
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+    .checkbox-group input {
+        width: auto;
+        margin-right: 10px;
+    }
+
+    .checkbox-group label {
+        font-size: calc(var(--font-size-small) - 2px);
+        color: var(--text-color);
+    }
+
 button {
     width: 100%;
     padding: 12px;
     cursor: pointer;
-    background-color: var(--button-bg-color);
+    background-color: forestgreen;
     color: white;
     border: none;
     border-radius: var(--border-radius);
@@ -72,5 +94,5 @@ button {
 }
 
     button:hover {
-        background-color: var(--button-hover-color);
+        background-color: forestgreen;
     }
